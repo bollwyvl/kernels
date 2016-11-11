@@ -1,3 +1,6 @@
 {
-  "kernel_name": "python"
+  "kernel_name": "python",
+  "notifications": {
+    "email": "ipython@example.com"
+  }
 }

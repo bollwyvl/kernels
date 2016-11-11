@@ -1,8 +1,9 @@
 name: jupyter-kernels
 channels:
-  - rc
+  - r
 dependencies:
   - ipykernel
   - jsonschema
   - jupyter_client
   - r-irkernel
+  - jinja2
