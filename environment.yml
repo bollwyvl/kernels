@@ -1,5 +1,7 @@
 name: jupyter-kernels
 channels:
+  - conda-forge
+  - defaults
   - r
 dependencies:
   - ipykernel
@@ -7,3 +9,4 @@ dependencies:
   - jupyter_client
   - r-irkernel
   - jinja2
+  - pyyaml

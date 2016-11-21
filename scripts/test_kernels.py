@@ -1,9 +1,25 @@
 #!/usr/bin/env python
+
+# Copyright (c) Jupyter Development Team.
+# Distributed under the terms of the Modified BSD License.
+"""
+Test a kernel's features
+
+This will be run _inside_ the docker container, and assumes that the container
+has already:
+- had the language runtime installed
+- had the kernel installed
+- had the kernel correctly associated
+"""
 import argparse
 import asyncio
 import enum
 import json
 import logging
+import shutil
+from tempfile import mkdtemp
+import subprocess
+import yaml
 
 from glob import glob
 from pprint import pprint
@@ -31,6 +47,7 @@ HERE = dirname(__file__)
 
 FEATURE_ROOT = abspath(join(HERE, "..", "features"))
 KERNEL_ROOT = abspath(join(HERE, "..", "kernels"))
+TEMPLATE_ROOT = abspath(join(HERE, "..", "templates"))
 
 FEATURES = glob(join(FEATURE_ROOT, "*", "*"))
 KERNELS = glob(join(KERNEL_ROOT, "*"))
@@ -57,8 +74,8 @@ class STATUS(enum.Enum):
 async def test_kernel(kernel_path):
     loop = asyncio.get_event_loop()
     log.info("testing {}".format(basename(kernel_path)))
-    with open(join(kernel_path, "meta.json")) as fp:
-        kernel_meta = json.load(fp)
+    with open(join(kernel_path, "kernel.yaml")) as fp:
+        kernel_meta = yaml.safe_load(fp)
 
     result = {}
 
@@ -74,7 +91,9 @@ async def test_kernel(kernel_path):
         except TimeoutError:
             result[feature_name] = STATUS.TIMEOUT
 
-    return {basename(kernel_path): result}
+    return {
+        basename(kernel_path): result
+    }
 
 
 def test_feature(kernel_name, feature):
