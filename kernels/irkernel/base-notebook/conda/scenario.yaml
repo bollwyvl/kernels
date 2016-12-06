@@ -1,0 +1,6 @@
+version: "1"
+install:
+  language:
+    privileged: false
+  kernel:
+    privileged: false

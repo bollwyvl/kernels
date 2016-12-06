@@ -1,0 +1,28 @@
+sudo: required
+
+language: c
+
+services:
+  - docker
+
+env:
+  global:
+    - CONDA_CHANNELS='conda-forge'
+    - CONDA_DEPENDENCIES='ruaml_yaml'
+  matrix:
+    - KERNEL_UNDER_TEST=ipython
+    - KERNEL_UNDER_TEST=irkernel
+
+install:
+  - git clone git://github.com/astropy/ci-helpers.git
+  - source ci-helpers/travis/setup_conda.sh
+
+script:
+  - ./scripts/compose.py $KERNEL_UNDER_TEST
+
+cache:
+  directories:
+    - $HOME/ci-helpers
+
+# FIXME: upload them somewhere
+# after_success:

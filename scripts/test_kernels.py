@@ -1,7 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright (c) Jupyter Development Team.
 # Distributed under the terms of the Modified BSD License.
+
 """
 Test a kernel's features
 
@@ -11,6 +12,7 @@ has already:
 - had the kernel installed
 - had the kernel correctly associated
 """
+
 import argparse
 import asyncio
 import enum
@@ -122,7 +124,7 @@ def test_feature(kernel_name, feature):
     return STATUS.OK
 
 
-async def main(kernels=None):
+async def main(kernels=None, output=None):
     if not kernels:
         kernel_paths = KERNELS
     else:
@@ -135,13 +137,18 @@ async def main(kernels=None):
         kernel_result = await test_kernel(kernel_path)
         result["kernels"].update(kernel_result)
 
-    return result
+    if output is None:
+        return result
+
+    with open(output, "w+") as fp:
+        fp.write(json_encoder.encode(result))
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Test some kernels")
     parser.add_argument("kernels", nargs="*", help="kernel names to test")
+    parser.add_argument("--output", default=None, help="output filename")
     args = parser.parse_args()
     loop = asyncio.get_event_loop()
-    output = loop.run_until_complete(main(kernels=args.kernels))
-    pprint(output)
+    output = loop.run_until_complete(main(kernels=args.kernels,
+                                          output=args.output))

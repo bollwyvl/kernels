@@ -1,0 +1,32 @@
+FROM jupyter/base-notebook
+
+{% if needs_language_install %}
+# {{ kernel_name }} needs its language runtime/package manager to be installed
+COPY ./kernel-install/language.sh $HOME/kernel-install/language.sh
+USER {% if install.language.privileged %}root{% else %}jovyan{% endif %}
+WORKDIR /home/jovyan
+RUN /bin/bash ./kernel-install/language.sh
+{% endif %}
+
+{% if needs_kernel_install %}
+# {{ kernel_name }} needs to be installed
+COPY ./kernel-install/kernel.sh $HOME/kernel-install/kernel.sh
+USER {% if install.kernel.privileged %}root{% else %}jovyan{% endif %}
+WORKDIR /home/jovyan
+RUN /bin/bash ./kernel-install/kernel.sh
+{% endif %}
+
+{% if needs_kernelspec_install %}
+# {{ kernel_name }} kernelspec needs to be installed
+COPY ./kernel-install/spec.sh $HOME/kernel-install/spec.sh
+USER {% if install.spec.privileged %}root{% else %}jovyan{% endif %}
+WORKDIR /home/jovyan
+RUN /bin/bash ./kernel-install/spec.sh
+{% endif %}
+
+# {{ kernel_name }} metadata
+COPY ./kernels/{{ kernel_name }} $HOME/kernels/{{ kernel_name }}
+
+# actually run the tests for {{ kernel_name }}
+USER jovyan
+WORKDIR $HOME

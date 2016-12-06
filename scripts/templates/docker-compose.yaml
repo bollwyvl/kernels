@@ -1,0 +1,13 @@
+version: "2"
+
+services:
+  {% for scenario in scenarios %}
+  {{ scenario }}:
+    command: scripts/test_kernels.py --output=./reports/{{ scenario }}.json
+    build:
+      context: {{ scenario }}
+    volumes:
+    - ../reports:/home/jovyan/reports
+    - ../scripts:/home/jovyan/scripts
+    - ../features:/home/jovyan/features
+  {% endfor %}
